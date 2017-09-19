@@ -1,15 +1,16 @@
 ArrayList<Point> points = new ArrayList<Point>();
 ArrayList<Button> buttons = new ArrayList<Button>();
 
+float guiHeight = 50;
+float canvasHeight;
+
 void setup() {
   size(640, 360);
   background(50);
   
+  canvasHeight = height - guiHeight;
   createGUI();
 }
-
-float guiHeight = 50;
-float canvasHeight = height - guiHeight;
 
 void draw() {
   background(50);
@@ -23,24 +24,34 @@ void draw() {
 }
 
 void mouseClicked(){
-  if(mouseButton == LEFT){
-    points.add(new Point(mouseX, mouseY));
-  }else if (mouseButton == RIGHT){
-    Point clickedPoint = getClickedPoint();
-    if(clickedPoint != null){
-      points.remove(clickedPoint);
-      return;
-    }
-  } //<>//
+  if(mouseY < canvasHeight){
+    if(mouseButton == LEFT){
+      points.add(new Point(mouseX, mouseY));
+    }else if (mouseButton == RIGHT){
+      Point clickedPoint = getClickedPoint();
+      if(clickedPoint != null){
+        points.remove(clickedPoint);
+        return;
+      }
+    } //<>//
+  }else{
+    Button clickedButton = getClickedButton();
+      if(clickedButton != null){
+        clickedButton.onClick();
+        return;
+      }
+  }
 }
 
 void mouseDragged(){
-  Point clickedPoint = getClickedPoint();
-  if(clickedPoint != null){
-      clickedPoint.x = mouseX;
-      clickedPoint.y = mouseY;
-      return;
-    }
+  if(mouseY < canvasHeight){
+    Point clickedPoint = getClickedPoint();
+    if(clickedPoint != null){
+        clickedPoint.x = mouseX;
+        clickedPoint.y = mouseY;
+        return;
+      }
+  }
 }
 
 void keyPressed() {
@@ -66,6 +77,19 @@ Point getClickedPoint(){
   return null;
 }
 
+Button getClickedButton(){
+  for(Button button : buttons){
+      if((mouseX >=button.x - button.WIDTH && mouseX <= button.x + button.WIDTH) &&
+       (mouseY >= button.y - button.WIDTH && mouseY <= button.y + button.WIDTH)){
+          
+      return button;
+    }
+  }
+  
+  return null;
+}
+
 void createGUI(){
-  buttons.add(new Button(0, height - guiHeight, "Refresh"));
+  buttons.add(new RefreshButton(0, height - guiHeight, "Refresh"));
+  buttons.add(new AddPointsButton(100, height - guiHeight, "Add points"));
 }

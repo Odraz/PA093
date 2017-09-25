@@ -1,6 +1,8 @@
 ArrayList<Point> points = new ArrayList<Point>();
 ArrayList<Button> buttons = new ArrayList<Button>();
 
+ArrayList<Point> hullToDisplay = new ArrayList<Point>();
+
 float guiHeight = 50;
 float canvasHeight;
 
@@ -21,6 +23,8 @@ void draw() {
   for (Button button : buttons) {
     button.display();
   }
+  
+  displayHull(hullToDisplay);
 }
 
 void mouseClicked(){
@@ -90,6 +94,24 @@ Button getClickedButton(){
 }
 
 void createGUI(){
-  buttons.add(new RefreshButton(0, height - guiHeight, "Refresh"));
-  buttons.add(new AddPointsButton(100, height - guiHeight, "Add points"));
+  buttons.add(new RefreshButton(0, "Refresh"));
+  buttons.add(new AddPointsButton(100, "Add points"));
+  buttons.add(new GiftWrappingButton(200, "Gift wrapping"));
+}
+
+void displayHull(ArrayList<Point> hull){
+  if(hull.isEmpty()){
+    return;
+  }
+  Point previousPoint = hull.get(0);
+  
+  for(int i = 1; i < hull.size(); i++){
+    stroke(255);
+    line(previousPoint.x, previousPoint.y, hull.get(i).x, hull.get(i).y);
+    previousPoint = hull.get(i);
+    
+   if(i == hull.size() - 1){
+     line(hull.get(0).x, hull.get(0).y, hull.get(i).x, hull.get(i).y);
+   }
+  }
 }

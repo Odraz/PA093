@@ -35,6 +35,7 @@ void mouseClicked(){
       Point clickedPoint = getClickedPoint();
       if(clickedPoint != null){
         points.remove(clickedPoint);
+        hullToDisplay.remove(clickedPoint);
         return;
       }
     } //<>//
@@ -97,6 +98,7 @@ void createGUI(){
   buttons.add(new RefreshButton(0, "Refresh"));
   buttons.add(new AddPointsButton(100, "Add points"));
   buttons.add(new GiftWrappingButton(200, "Gift wrapping"));
+  buttons.add(new GrahamScanButton(300, "Graham scan"));
 }
 
 void displayHull(ArrayList<Point> hull){
@@ -114,4 +116,13 @@ void displayHull(ArrayList<Point> hull){
      line(hull.get(0).x, hull.get(0).y, hull.get(i).x, hull.get(i).y);
    }
   }
+}
+
+/*
+# Three points are a counter-clockwise turn if ccw > 0, clockwise if
+# ccw < 0, and collinear if ccw = 0 because ccw is a determinant that
+# gives twice the signed  area of the triangle formed by p1, p2 and p3.
+*/
+float counterClockwise(Point p1, Point p2, Point p3){
+    return (p2.x - p1.x)*(p3.y - p1.y) - (p2.y - p1.y)*(p3.x - p1.x);
 }

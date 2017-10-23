@@ -1,5 +1,6 @@
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Stack;
 
 class Button{
   float WIDTH = 100;
@@ -43,20 +44,18 @@ class Button{
 }
 
 class RefreshButton extends Button{
-  RefreshButton(float x, String text){
-    super(x, text);
+  RefreshButton(float x){
+    super(x, "Refresh");
   }
   
   void onClick(){
-    background(50);
-    points.clear();  
-    hullToDisplay.clear();
+    refresh();
   }
 }
 
 class AddPointsButton extends Button{
-  AddPointsButton(float x, String text){
-    super(x, text);
+  AddPointsButton(float x){
+    super(x, "Add points");
   }
   
   void onClick(){
@@ -67,8 +66,8 @@ class AddPointsButton extends Button{
 }
 
 class GiftWrappingButton extends Button{
-  GiftWrappingButton(float x, String text){
-    super(x, text);
+  GiftWrappingButton(float x){
+    super(x, "Gift wrapping");
   }
   
   void onClick(){
@@ -109,8 +108,8 @@ class GiftWrappingButton extends Button{
 }
 
 class GrahamScanButton extends Button{
-  GrahamScanButton(float x, String text){
-    super(x, text);
+  GrahamScanButton(float x){
+    super(x, "Graham scan");
   }
   
   void onClick(){
@@ -155,5 +154,62 @@ class GrahamScanButton extends Button{
     }
     
     return hull;
+  }
+}
+
+class PolygonButton extends Button{
+  PolygonButton(float x){
+    super(x, "Start polygon");
+  }
+  
+  void onClick(){
+    if(isCreatingPolygon){
+      text = "Start polygon";
+      isCreatingPolygon = false;
+      hullToDisplay = (ArrayList<Point>)points.clone();
+    }else{
+      refresh();
+      text = "Draw polygon";
+      isCreatingPolygon = true;
+    }
+  }
+}
+
+class TriangulationButton extends Button{
+  TriangulationButton(float x){
+    super(x, "Triangulation");
+  }
+  
+  void onClick(){
+    triangulate(hullToDisplay);
+  }
+  
+  void triangulate(ArrayList<Point> hull){
+    //sort vertices v1, v2, …, vn lexicographically
+    Collections.sort(hull, new LexicographicallComparator());
+    
+    //put v1 , v2 to stack
+    Stack<Point> stack = new Stack<Point>();
+    stack.push(hull.get(0));
+    stack.push(hull.get(1));
+    
+    for(Point point : hull){
+      println(point.y);
+    }
+    
+    //for i = 3 to n:
+    for(int i = 3; i < hull.size(); i++){
+    //  if vi and the top of the stack lie on the same path (left or right)
+    //    add edges vi, vj, …, vi, vk, where vk is the last vertex forming the “correct” line
+    //    pop vj, …, vkand push vi
+      if(false){
+    //  else
+    //    add edges from vi to all vertices stored in stack and remove (pop) them from stack
+    //    store vtop
+    //    push vtop and vi
+      }else{
+      
+      }
+    }
   }
 }

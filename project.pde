@@ -6,6 +6,8 @@ ArrayList<Point> hullToDisplay = new ArrayList<Point>();
 float guiHeight = 50;
 float canvasHeight;
 
+boolean isCreatingPolygon = false;
+
 void setup() {
   size(640, 360);
   background(50);
@@ -95,10 +97,12 @@ Button getClickedButton(){
 }
 
 void createGUI(){
-  buttons.add(new RefreshButton(0, "Refresh"));
-  buttons.add(new AddPointsButton(100, "Add points"));
-  buttons.add(new GiftWrappingButton(200, "Gift wrapping"));
-  buttons.add(new GrahamScanButton(300, "Graham scan"));
+  buttons.add(new RefreshButton(0));
+  buttons.add(new AddPointsButton(100));
+  buttons.add(new GiftWrappingButton(200));
+  buttons.add(new GrahamScanButton(300));
+  buttons.add(new PolygonButton(400)); 
+  buttons.add(new TriangulationButton(500)); 
 }
 
 void displayHull(ArrayList<Point> hull){
@@ -125,4 +129,10 @@ void displayHull(ArrayList<Point> hull){
 */
 float counterClockwise(Point p1, Point p2, Point p3){
     return (p2.x - p1.x)*(p3.y - p1.y) - (p2.y - p1.y)*(p3.x - p1.x);
+}
+
+void refresh(){
+    background(50);
+    points.clear();  
+    hullToDisplay.clear();
 }

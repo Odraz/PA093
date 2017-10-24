@@ -2,6 +2,8 @@ ArrayList<Point> points = new ArrayList<Point>();
 ArrayList<Button> buttons = new ArrayList<Button>();
 
 ArrayList<Point> hullToDisplay = new ArrayList<Point>();
+ArrayList<Edge> edgesToDisplay = new ArrayList<Edge>();
+
 
 float guiHeight = 50;
 float canvasHeight;
@@ -27,6 +29,7 @@ void draw() {
   }
   
   displayHull(hullToDisplay);
+  displayEdges(edgesToDisplay);
 }
 
 void mouseClicked(){
@@ -122,6 +125,16 @@ void displayHull(ArrayList<Point> hull){
   }
 }
 
+void displayEdges(ArrayList<Edge> edges){
+  if(edges.isEmpty()){
+    return;
+  }
+  
+  for(Edge edge : edges){
+    edge.display();
+  }
+}
+
 /*
 # Three points are a counter-clockwise turn if ccw > 0, clockwise if
 # ccw < 0, and collinear if ccw = 0 because ccw is a determinant that
@@ -135,4 +148,5 @@ void refresh(){
     background(50);
     points.clear();  
     hullToDisplay.clear();
+    edgesToDisplay.clear();
 }

@@ -164,9 +164,9 @@ class PolygonButton extends Button{
   
   void onClick(){
     if(isCreatingPolygon){
-      text = "Start polygon";
+      text = "Start polygon ccw";
       isCreatingPolygon = false;
-      hullToDisplay = (ArrayList<Point>)points.clone();
+      hullToDisplay = new ArrayList<Point>(points);
     }else{
       refresh();
       text = "Draw polygon";
@@ -184,32 +184,80 @@ class TriangulationButton extends Button{
     triangulate(hullToDisplay);
   }
   
-  void triangulate(ArrayList<Point> hull){
+  void triangulate(ArrayList<Point> hull){ //<>//
+    ArrayList<Point> leftPath = new ArrayList<Point>();
+    ArrayList<Point> rightPath = new ArrayList<Point>();
+    
+    Point previousPoint = hull.get(0);
+    
+    for(Point point : hull){
+      if(point.y > previousPoint.y)
+      {
+        leftPath.add(point);
+      }else{
+        rightPath.add(point);
+      }
+      
+      previousPoint = point;
+    }
+    
     //sort vertices v1, v2, …, vn lexicographically
-    Collections.sort(hull, new LexicographicallComparator());
+    ArrayList<Point> sortedHull = new ArrayList<Point>(hull);
+    Collections.sort(sortedHull, new LexicographicallComparator());
     
     //put v1 , v2 to stack
     Stack<Point> stack = new Stack<Point>();
-    stack.push(hull.get(0));
-    stack.push(hull.get(1));
+    stack.push(sortedHull.get(0));
+    stack.push(sortedHull.get(1));
     
-    for(Point point : hull){
-      println(point.y);
-    }
-    
+    ArrayList<Edge> edges = new ArrayList<Edge>();
     //for i = 3 to n:
-    for(int i = 3; i < hull.size(); i++){
+    for(int i = 2; i < sortedHull.size(); i++){       //<>//
+      Point pointi = sortedHull.get(i);
     //  if vi and the top of the stack lie on the same path (left or right)
     //    add edges vi, vj, …, vi, vk, where vk is the last vertex forming the “correct” line
-    //    pop vj, …, vkand push vi
-      if(false){
+    //    pop vj, …, vk and push vi
+      if(leftPath.contains(stack.peek()) && leftPath.contains(pointi)){
+        while(stack.size() >= 2){
+          Point pointj = stack.pop();
+          Point pointk = stack.pop();
+          if(counterClockwise(pointk, pointj, pointi) > 0){
+            edges.add(new Edge(pointi, pointk));
+          }else{
+            stack.push(pointk);
+            stack.push(pointj);            
+            return;
+          }
+        }
+      }else if(rightPath.contains(stack.peek()) && rightPath.contains(pointi)){
+        while(stack.size() >= 2){
+          Point pointj = stack.pop();
+          Point pointk = stack.pop();
+          if(counterClockwise(pointk, pointj, pointi) < 0){
+            edges.add(new Edge(pointi, pointk));
+          }else{
+            stack.push(pointk);
+            stack.push(pointj);
+            return;
+          }
+        }
     //  else
     //    add edges from vi to all vertices stored in stack and remove (pop) them from stack
     //    store vtop
     //    push vtop and vi
       }else{
-      
+        Point pointTop = stack.peek();
+        while(stack.size() > 0){
+          
+          edges.add(new Edge(pointi, stack.pop()));
+        }
+        
+        stack.push(pointTop);
       }
+      
+      stack.push(pointi);
     }
+    
+    edgesToDisplay = new ArrayList(edges);
   }
 }

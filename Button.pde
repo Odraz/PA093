@@ -203,7 +203,7 @@ class TriangulationButton extends Button{
     
     //sort vertices v1, v2, …, vn lexicographically
     ArrayList<Point> sortedHull = new ArrayList<Point>(hull);
-    Collections.sort(sortedHull, new LexicographicallComparator());
+    Collections.sort(sortedHull, new VerticalComparator());
     
     //put v1 , v2 to stack
     Stack<Point> stack = new Stack<Point>();
@@ -259,5 +259,83 @@ class TriangulationButton extends Button{
     }
     
     edgesToDisplay = new ArrayList(edges);
+  }
+}
+
+class KDTreeButton extends Button{
+  KDTreeButton(float x){
+    super(x, "k-D Tree");
+  }
+  
+  void onClick(){
+    KDNode root = createKDTree(points, 0);
+    root.draw();
+  }
+  
+  KDNode createKDTree(ArrayList<Point> points, int depth){
+    if(points.size() == 0){ //<>//
+      return null;
+    }
+    
+    ArrayList<Point> points1 = new ArrayList<Point>();
+    ArrayList<Point> points2 = new ArrayList<Point>();
+    
+    Point pointl;
+    
+    if(points.size() == 1){
+      return new KDNode(points.get(0), depth);
+    }else if((depth % 2) == 0 ){
+      ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
+      Collections.sort(sortedPoints, new HorizontalComparator());
+      
+      /*
+      for(Point point : sortedPoints){
+        println(point.x);
+      }
+      */
+      for(int i = 0; i < (points.size() / 2);i++){ //(4/2 + 1)
+        points1.add(new Point(points.get(i).x, points.get(i).y));
+      }
+      
+      for(int i = (points.size() / 2); i < points.size();i++){
+        points2.add(new Point(points.get(i).x, points.get(i).y));
+      }
+      
+      pointl = points1.get(points1.size() - 1);
+    }else{
+      ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
+      Collections.sort(sortedPoints, new VerticalComparator());
+      
+      for(Point point : sortedPoints){
+        println(point.y);
+      }
+      
+      for(int i = 0; i < (points.size() / 2) + 1;i++){ //(3/2)
+        points1.add(new Point(points.get(i).x, points.get(i).y));
+      }
+      
+      for(int i = (points.size() / 2) + 1; i < points.size();i++){
+        points2.add(new Point(points.get(i).x, points.get(i).y));
+      }
+      
+      pointl = points1.get(points1.size() - 1);
+    }
+    
+    KDNode vLeft = createKDTree(points1, depth + 1);
+    KDNode vRight = createKDTree(points2, depth + 1);
+    
+    KDNode v = new KDNode(pointl, depth);
+    v.lesser = vLeft;
+    v.greater = vRight;
+    
+    if(vLeft != null){
+      vLeft.parent = v;
+    }
+    
+    if(vRight != null){
+      vRight.parent = v;
+    }
+    
+    return v;
   }
 }

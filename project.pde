@@ -11,7 +11,7 @@ float canvasHeight;
 boolean isCreatingPolygon = false;
 
 void setup() {
-  size(640, 360);
+  size(848, 480);
   background(50);
   
   canvasHeight = height - guiHeight;
@@ -105,7 +105,8 @@ void createGUI(){
   buttons.add(new GiftWrappingButton(200));
   buttons.add(new GrahamScanButton(300));
   buttons.add(new PolygonButton(400)); 
-  buttons.add(new TriangulationButton(500)); 
+  buttons.add(new TriangulationButton(500));
+  buttons.add(new KDTreeButton(600)); 
 }
 
 void displayHull(ArrayList<Point> hull){

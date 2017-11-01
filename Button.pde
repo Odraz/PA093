@@ -181,6 +181,10 @@ class TriangulationButton extends Button{
   }
   
   void onClick(){
+    if(hullToDisplay.isEmpty()){
+      return;
+    }
+    
     triangulate(hullToDisplay);
   }
   
@@ -268,12 +272,16 @@ class KDTreeButton extends Button{
   }
   
   void onClick(){
+    if(points.isEmpty()){
+      return;
+    }
+    
     KDNode root = createKDTree(points, 0);
-    root.draw();
+    root.draw(new Rect(0, 0, width, canvasHeight));
   }
   
-  KDNode createKDTree(ArrayList<Point> points, int depth){
-    if(points.size() == 0){ //<>//
+  KDNode createKDTree(ArrayList<Point> points, int depth){    
+    if(points.isEmpty()){
       return null;
     }
     
@@ -287,47 +295,49 @@ class KDTreeButton extends Button{
     }else if((depth % 2) == 0 ){
       ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
       Collections.sort(sortedPoints, new HorizontalComparator());
-      
+
       /*
       for(Point point : sortedPoints){
-        println(point.x);
+        println(point);
       }
       */
-      for(int i = 0; i < (points.size() / 2);i++){ //(4/2 + 1)
-        points1.add(new Point(points.get(i).x, points.get(i).y));
+      
+      for(int i = 0; i < (sortedPoints.size() / 2);i++){ //(4/2 + 1)
+        points1.add(sortedPoints.get(i));
       }
       
-      for(int i = (points.size() / 2); i < points.size();i++){
-        points2.add(new Point(points.get(i).x, points.get(i).y));
+      for(int i = (points.size() / 2 + 1); i < sortedPoints.size();i++){
+        points2.add(sortedPoints.get(i));
       }
       
-      pointl = points1.get(points1.size() - 1);
+      pointl = sortedPoints.get(sortedPoints.size() /2);
     }else{
       ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
       Collections.sort(sortedPoints, new VerticalComparator());
+      Collections.reverse(sortedPoints);
       
+      println("-------------");
       for(Point point : sortedPoints){
-        println(point.y);
+        println(point);
       }
       
-      for(int i = 0; i < (points.size() / 2) + 1;i++){ //(3/2)
-        points1.add(new Point(points.get(i).x, points.get(i).y));
+      for(int i = 0; i < (sortedPoints.size() / 2);i++){ //(3/2)
+        points1.add(sortedPoints.get(i));
       }
       
-      for(int i = (points.size() / 2) + 1; i < points.size();i++){
-        points2.add(new Point(points.get(i).x, points.get(i).y));
+      for(int i = (sortedPoints.size() / 2) + 1; i < sortedPoints.size();i++){
+        points2.add(sortedPoints.get(i));
       }
       
-      pointl = points1.get(points1.size() - 1);
+      pointl = sortedPoints.get(sortedPoints.size()/2);
+      //println("median: " + pointl);
     }
     
+    KDNode v = new KDNode(pointl, depth);
     KDNode vLeft = createKDTree(points1, depth + 1);
     KDNode vRight = createKDTree(points2, depth + 1);
     
-    KDNode v = new KDNode(pointl, depth);
-    v.lesser = vLeft;
-    v.greater = vRight;
-    
+        
     if(vLeft != null){
       vLeft.parent = v;
     }
@@ -335,7 +345,10 @@ class KDTreeButton extends Button{
     if(vRight != null){
       vRight.parent = v;
     }
-    
+    //<>//
+    v.lesser = vLeft;
+    v.greater = vRight;
+
     return v;
   }
 }

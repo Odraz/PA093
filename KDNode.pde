@@ -15,35 +15,38 @@ class KDNode{
     return "((" + point.x + ", " + point.y + ") L: " +  (lesser != null ? lesser.print() : "-") + " | P: " + (greater != null ? greater.print() : "-");
   }
   
-  void draw(){
-    if(depth % 2 == 0){
-      if(parent != null){
-        if(parent.point.y > point.y){
-          edgesToDisplay.add(new Edge(point.x, 0, point.x, parent.point.y, color(20 * depth, 0, 0)));
-        }else{
-          edgesToDisplay.add(new Edge(point.x, parent.point.y, point.x, height, color(20 * depth, 0, 0)));
-        }
-      }else{
-        edgesToDisplay.add(new Edge(point.x, 0, point.x, height, color(20 * depth, 0, 0)));
-      }
-    }else{
-      if(parent != null){
-        if(parent.point.x < point.x){
-          edgesToDisplay.add(new Edge(0, point.y, parent.point.x, point.y, color(0, 20 * depth, 0)));
-        }else{
-          edgesToDisplay.add(new Edge(parent.point.x, point.y, width, point.y, color(0, 20 * depth, 0)));
-        }
-      }else{
-        edgesToDisplay.add(new Edge(0, point.y, width, point.y, color(0, 20 * depth, 0)));
-      }
-    }
+  void draw(Rect sector){
+    if(parent != null){    
+     //edgesToDisplay.add(new Edge(parent.point, point));
+   }   
    
-   if(lesser != null){
-     lesser.draw();
+   color red = color(255, 0, 0);
+   color green = color(0, 255, 0);
+   
+   if(depth % 2 == 0){ //even (vertical) //<>//
+       edgesToDisplay.add(new Edge(point.x, sector.y1, point.x, sector.y2, red));
+       
+       if(lesser != null){
+         lesser.draw(new Rect(sector.x1, sector.y1, point.x, sector.y2));
+       }
+       
+       if(greater != null){
+         greater.draw(new Rect(point.x, sector.y1, sector.x2, sector.y2));
+       }
+   }else{ //odd (horizontal)
+       edgesToDisplay.add(new Edge(sector.x1, point.y, sector.x2, point.y, green));
+       
+       if(lesser != null){
+         lesser.draw(new Rect(sector.x1, sector.y1, sector.x2, point.y));
+       }
+       
+       if(greater != null){
+         greater.draw(new Rect(sector.x1, point.y, sector.x2, sector.y2));
+       }
    }
    
-   if(greater != null){
-     greater.draw();
-   }
+   
+   
+   
   }
 }

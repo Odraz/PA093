@@ -14,4 +14,8 @@ class Point{
     fill(clr);
     ellipse(x, y, WIDTH, WIDTH);
   }
+  
+  String toString(){
+    return "[" + x + ", " + y + "]";
+  }
 }

@@ -20,6 +20,10 @@ void setup() {
 
 void draw() {
   background(50);
+  
+  displayEdges(edgesToDisplay);
+  displayHull(hullToDisplay);
+  
   for (Point point : points) {
     point.display();
   }
@@ -27,9 +31,7 @@ void draw() {
   for (Button button : buttons) {
     button.display();
   }
-  
-  displayHull(hullToDisplay);
-  displayEdges(edgesToDisplay);
+    
 }
 
 void mouseClicked(){

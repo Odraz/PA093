@@ -39,6 +39,23 @@ class Edge{
     return ((direction(c.centre) > 0 && direction(p) > 0) || (direction(c.centre) < 0 && direction(p) < 0)) ? c.radius : -c.radius;
   }
   
+  Point findDelaunayPoint(ArrayList<Point> hull){
+    double smallestDelaunayDistance = Integer.MAX_VALUE;
+    Point p = null;
+    
+    for(Point point : hull){
+      if((point == point1 || point == point2) || (direction(point) <= 0)){
+        continue;
+      }
+      if(delaunayDistance(point) < smallestDelaunayDistance){
+        smallestDelaunayDistance = delaunayDistance(point);
+        p = point;
+      }
+    }
+    
+    return p;
+  }
+  
   /*
   if value > 0, p2 is on the left side of the line.
   if value = 0, p2 is on the same line.

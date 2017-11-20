@@ -28,6 +28,22 @@ class Point{
     return Math.sqrt(Math.pow(x-p2.x,2)+Math.pow(y-p2.y,2));
   }
   
+  Point getClosestPoint(ArrayList<Point> points){
+    Point closestPoint = null;
+    double closestDistance = Integer.MAX_VALUE;
+    for(Point point : points){
+      if(point == this){
+        continue;
+      }
+      if(this.distance(point) < closestDistance){
+        closestDistance = this.distance(point);
+        closestPoint = point;
+      }
+    }
+    
+    return closestPoint;
+  }
+  
   double square(){
     return Math.pow(x, 2) + Math.pow(y, 2);
   }

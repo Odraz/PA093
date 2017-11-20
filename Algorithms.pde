@@ -230,90 +230,69 @@ KDNode createKDTree(ArrayList<Point> points, int depth){
   return v;
 }
 
-ArrayList<Edge> delaunayTriangulation(ArrayList<Point> hull){
-  ArrayList<Edge> dt = new ArrayList<Edge>();
-  Queue<ActiveEdge> ael = new LinkedList<ActiveEdge>();
-
-  Point p1 = hull.get(0); //p1 = random point
-  Point p2 = null; //p2 = closest point to p1
-  
-  double closestDistance = Integer.MAX_VALUE;
-  for(Point point : hull){
-    if(point == p1){
-      continue;
-    }
-    if(p1.distance(point) < closestDistance){
-      closestDistance = p1.distance(point);
-      p2 = point;
-    }
+ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
+  if(points.isEmpty()){
+    return null;
   }
+  
+  ArrayList<Edge> dt = new ArrayList<Edge>();
+  Queue<Edge> ael = new LinkedList<Edge>();
+
+  Point p1 = getLeftmostPoint(points); //p1 = random point
+  p1.clr = color(255,0,0);
+  Point p2 = p1.getClosestPoint(points); //p2 = closest point to p1
+  p2.clr = color(0,255,0);
   
   Edge e = new Edge(p1, p2);
-  Point p = findDelaunayPoint(hull, e); //p = smallest Delaunay distance from e
+  Point p = e.findDelaunayPoint(points); //p = smallest Delaunay distance from e
   if(p == null){
     e = new Edge(p2, p1);
-    p = findDelaunayPoint(hull, e);
+    p = e.findDelaunayPoint(points);
   }
+  p.clr = color(0,0,255);
   
   Edge e2 = new Edge(p2, p);
   Edge e3 = new Edge(p, p1);
-  
-  ActiveEdge aE = new ActiveEdge(e);
-  ActiveEdge aE2 = new ActiveEdge(e2);
-  ActiveEdge aE3 = new ActiveEdge(e3);
-  
-  aE.adjacentEdge = aE2;
-  aE2.adjacentEdge = aE3;
-  aE3.adjacentEdge = aE;
-  
-  ael.add(aE);
-  ael.add(aE2);
-  ael.add(aE3);
+
+  ael.add(e);
+  ael.add(e2);
+  ael.add(e3);
   
   while (!ael.isEmpty()){
-    aE = ael.poll();
-    aE.edge = new Edge(aE.edge.point2, aE.edge.point1);
-    p = findDelaunayPoint(hull, aE.edge); //p = smallest Delaunay distance from e
+    e = ael.poll();
+    e = new Edge(e.point2, e.point1);
+    p = e.findDelaunayPoint(points); //p = smallest Delaunay distance from e
     if(p != null){
-      e2 = new Edge(aE.edge.point2, p);
-      e3 = new Edge(p, aE.edge.point1);
+      e2 = new Edge(e.point2, p);
+      e3 = new Edge(p, e.point1);
       AddToAEL(e2, ael, dt); //Add e2, e3 to AEL
       AddToAEL(e3, ael, dt);
     }
-    
-    dt.add(aE.edge);
-    ael.remove(aE);
+    dt.add(e);
+    ael.remove(e);
   }
   
-  return dt; //<>//
-}
+  return dt;
+} //<>//
 
-void AddToAEL(Edge e, Queue<ActiveEdge> ael, ArrayList<Edge> dt){
+void AddToAEL(Edge e, Queue<Edge> ael, ArrayList<Edge> dt){
   Edge eReversed = new Edge(e.point2, e.point1);
   if(ael.contains(eReversed)){
-    ael.remove(new ActiveEdge(e));
+    ael.remove(e);
   }else{
-    ActiveEdge aE = new ActiveEdge(e);
-    //aE.adjacentEdge = aE2;
-    ael.add(aE);
+    ael.add(e);
   }
   
   dt.add(e);
 }
 
-Point findDelaunayPoint(ArrayList<Point> hull, Edge e){
-  double smallestDelaunayDistance = Integer.MAX_VALUE;
-  Point p = null;
-  
-  for(Point point : hull){
-    if((point == e.point1 || point == e.point2) || (e.direction(point) <= 0)){
-      continue;
-    }
-    if(e.delaunayDistance(point) < smallestDelaunayDistance){
-      smallestDelaunayDistance = e.delaunayDistance(point);
-      p = point;
+Point getLeftmostPoint(ArrayList<Point> points){
+  Point leftmostPoint = points.get(0);
+  for(Point point : points){
+    if(leftmostPoint.x > point.x){      
+      leftmostPoint = point;
     }
   }
   
-  return p;
+  return leftmostPoint;
 }

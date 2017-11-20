@@ -116,7 +116,7 @@ class TriangulationButton extends Button{
 }
 
 class KDTreeButton extends Button{
-  KDTreeButton(float x){ //<>//
+  KDTreeButton(float x){
     super(x, "k-D Tree");
   }
   
@@ -136,10 +136,11 @@ class DelaunayButton extends Button{
   }
   
   void onClick(){
-    if(hullToDisplay.isEmpty()){
+    if(points.isEmpty()){
+      println("Points are empty");
       return;
     }
     
-    edgesToDisplay = new ArrayList<Edge>(delaunayTriangulation(hullToDisplay));
+    edgesToDisplay = new ArrayList<Edge>(delaunayTriangulation(points));
   }
 }

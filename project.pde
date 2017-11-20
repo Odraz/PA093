@@ -1,9 +1,15 @@
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
+
 ArrayList<Point> points = new ArrayList<Point>();
 ArrayList<Button> buttons = new ArrayList<Button>();
 
 ArrayList<Point> hullToDisplay = new ArrayList<Point>();
 ArrayList<Edge> edgesToDisplay = new ArrayList<Edge>();
-
+ArrayList<Triangle> trianglesToDisplay = new ArrayList<Triangle>();
 
 float guiHeight = 50;
 float canvasHeight;
@@ -23,6 +29,7 @@ void draw() {
   
   displayEdges(edgesToDisplay);
   displayHull(hullToDisplay);
+  displayTriangles(trianglesToDisplay);
   
   for (Point point : points) {
     point.display();
@@ -31,6 +38,7 @@ void draw() {
   for (Button button : buttons) {
     button.display();
   }
+    
     
 }
 
@@ -108,7 +116,8 @@ void createGUI(){
   buttons.add(new GrahamScanButton(300));
   buttons.add(new PolygonButton(400)); 
   buttons.add(new TriangulationButton(500));
-  buttons.add(new KDTreeButton(600)); 
+  buttons.add(new KDTreeButton(600));
+  buttons.add(new DelaunayButton(700)); 
 }
 
 void displayHull(ArrayList<Point> hull){
@@ -138,6 +147,16 @@ void displayEdges(ArrayList<Edge> edges){
   }
 }
 
+void displayTriangles(ArrayList<Triangle> triangles){
+  if(triangles.isEmpty()){
+    return;
+  }
+  
+  for(Triangle triangle : triangles){
+    triangle.display();
+  }
+}
+
 /*
 # Three points are a counter-clockwise turn if ccw > 0, clockwise if
 # ccw < 0, and collinear if ccw = 0 because ccw is a determinant that
@@ -152,4 +171,5 @@ void refresh(){
     points.clear();  
     hullToDisplay.clear();
     edgesToDisplay.clear();
+    trianglesToDisplay.clear();
 }

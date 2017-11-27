@@ -254,10 +254,13 @@ ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
   Edge e2 = new Edge(p2, p);
   Edge e3 = new Edge(p, p1);
 
+  Triangle triangle = new Triangle();
   ael.add(e);
   ael.add(e2);
   ael.add(e3);
-  
+  triangle = new Triangle(p, p1, p2);
+  trianglesToDisplay.add(triangle);
+      
   while (!ael.isEmpty()){
     e = ael.poll();
     e = new Edge(e.point2, e.point1);
@@ -265,8 +268,10 @@ ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
     if(p != null){
       e2 = new Edge(e.point2, p);
       e3 = new Edge(p, e.point1);
-      AddToAEL(e2, ael, dt); //Add e2, e3 to AEL
-      AddToAEL(e3, ael, dt);
+      addToAEL(e2, ael, dt); //Add e2, e3 to AEL
+      addToAEL(e3, ael, dt);
+      triangle = new Triangle(p, e.point1, e.point2);
+      trianglesToDisplay.add(triangle);
     }
     dt.add(e);
     ael.remove(e);
@@ -275,7 +280,7 @@ ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
   return dt;
 } //<>//
 
-void AddToAEL(Edge e, Queue<Edge> ael, ArrayList<Edge> dt){
+void addToAEL(Edge e, Queue<Edge> ael, ArrayList<Edge> dt){
   Edge eReversed = new Edge(e.point2, e.point1);
   if(ael.contains(eReversed)){
     ael.remove(e);
@@ -295,4 +300,40 @@ Point getLeftmostPoint(ArrayList<Point> points){
   }
   
   return leftmostPoint;
+}
+
+ArrayList<Edge> voronoi(ArrayList<Triangle> triangles){
+  ArrayList<Edge> edges = new ArrayList<Edge>();
+  ArrayList<Point> voronoiPoints = new ArrayList<Point>();
+  
+  for(Triangle triangle : triangles){
+    Point voronoiPoint = new Point(triangle.getVoronoiPoint().x, triangle.getVoronoiPoint().y);
+    voronoiPoint.clr = color(255, 0, 0);
+    voronoiPoints.add(voronoiPoint);
+    
+    ArrayList<Triangle> neighbourTriangles = new ArrayList<Triangle>();
+    neighbourTriangles.add(findTriangle(triangles, new Edge(triangle.point1, triangle.point2)));
+    neighbourTriangles.add(findTriangle(triangles, new Edge(triangle.point2, triangle.point3)));
+    neighbourTriangles.add(findTriangle(triangles, new Edge(triangle.point3, triangle.point1)));
+    
+    if(!neighbourTriangles.isEmpty()){
+      for(Triangle neighbourTriangle : neighbourTriangles){        
+        edges.add(new Edge(voronoiPoint, neighbourTriangle.getVoronoiPoint(), color(255, 0, 0))); //<>//
+      }  
+    }
+  } 
+  
+  points.addAll(voronoiPoints);
+  return edges;
+}
+
+Triangle findTriangle(ArrayList<Triangle> triangles, Edge edge){
+  for(Triangle triangle : triangles){
+    if(triangle.containsEdge(edge)){
+      return triangle;
+    }
+  }
+  
+  
+  return null;
 }

@@ -17,7 +17,7 @@ float canvasHeight;
 boolean isCreatingPolygon = false;
 
 void setup() {
-  size(848, 480);
+  size(900, 600);
   background(50);
   
   canvasHeight = height - guiHeight;
@@ -27,9 +27,9 @@ void setup() {
 void draw() {
   background(50);
   
+  displayTriangles(trianglesToDisplay);
   displayEdges(edgesToDisplay);
   displayHull(hullToDisplay);
-  displayTriangles(trianglesToDisplay);
   
   for (Point point : points) {
     point.display();
@@ -117,7 +117,9 @@ void createGUI(){
   buttons.add(new PolygonButton(400)); 
   buttons.add(new TriangulationButton(500));
   buttons.add(new KDTreeButton(600));
-  buttons.add(new DelaunayButton(700)); 
+  buttons.add(new DelaunayButton(700));
+  buttons.add(new VoronoiButton(800)); 
+  //Kruznice opsane definuji voronoi vrcholy
 }
 
 void displayHull(ArrayList<Point> hull){

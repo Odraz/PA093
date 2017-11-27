@@ -10,6 +10,12 @@ class Edge{
    this.clr = color(255);
   }
   
+  Edge(Point p, Point q, color clr){
+   this.point1 = p;
+   this.point2 = q; 
+   this.clr = clr;
+  }
+  
   Edge(float x1, float y1, float x2, float y2, color clr){
     point1 = new Point(x1, y1);
     point2 = new Point(x2, y2);

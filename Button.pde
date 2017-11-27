@@ -144,3 +144,13 @@ class DelaunayButton extends Button{
     edgesToDisplay = new ArrayList<Edge>(delaunayTriangulation(points));
   }
 }
+
+class VoronoiButton extends Button{
+  VoronoiButton(float x){
+    super(x, "Voronoi");
+  }
+  
+  void onClick(){
+    edgesToDisplay = voronoi(trianglesToDisplay);
+  }
+}

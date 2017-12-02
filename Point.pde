@@ -56,4 +56,17 @@ class Point{
     
     return u1 * v2 - v1 * u2;
   }
+  
+  @Override
+  public boolean equals(Object obj){
+    if (obj == null) {
+        return false;
+    }
+    if (!Point.class.isAssignableFrom(obj.getClass())) {
+        return false;
+    }
+    final Point other = (Point) obj;
+    
+    return x == other.x && y == other.y;
+  }
 }

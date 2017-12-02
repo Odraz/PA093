@@ -75,8 +75,13 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   ArrayList<Point> rightPath = new ArrayList<Point>();
   
   Point previousPoint = hull.get(0);
+  leftPath.add(previousPoint);
   
   for(Point point : hull){
+    if(previousPoint == point){
+      continue;
+    }
+    
     if(point.y > previousPoint.y)
     {
       leftPath.add(point);
@@ -98,16 +103,17 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   
   ArrayList<Edge> edges = new ArrayList<Edge>();
   //for i = 3 to n:
-  for(int i = 2; i < sortedHull.size(); i++){      
+  for(int i = 2; i < sortedHull.size(); i++){          
     Point pointi = sortedHull.get(i);
+    //println("Point " + i + ": " + pointi + ", stack size: " + stack.size());
   //  if vi and the top of the stack lie on the same path (left or right)
   //    add edges vi, vj, …, vi, vk, where vk is the last vertex forming the “correct” line
   //    pop vj, …, vk and push vi
     if(leftPath.contains(stack.peek()) && leftPath.contains(pointi)){
-      while(stack.size() >= 2){
+      while(stack.size() >= 2){        
         Point pointj = stack.pop();
         Point pointk = stack.pop();
-        if(counterClockwise(pointk, pointj, pointi) > 0){
+        if(counterClockwise(pointk, pointj, pointi) < 0){
           edges.add(new Edge(pointi, pointk));
         }else{
           stack.push(pointk);
@@ -119,7 +125,7 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
       while(stack.size() >= 2){
         Point pointj = stack.pop();
         Point pointk = stack.pop();
-        if(counterClockwise(pointk, pointj, pointi) < 0){
+        if(counterClockwise(pointk, pointj, pointi) > 0){
           edges.add(new Edge(pointi, pointk));
         }else{
           stack.push(pointk);
@@ -133,7 +139,7 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   //    push vtop and vi
     }else{
       Point pointTop = stack.peek();
-      while(stack.size() > 0){          
+      while(stack.size() > 0){    
         edges.add(new Edge(pointi, stack.pop()));
       }
       
@@ -158,10 +164,11 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   return new ArrayList(edges);
 }
 
-KDNode createKDTree(ArrayList<Point> points, int depth){    
+KDNode createKDTree(ArrayList<Point> points, int depth){  //point belongs to left and below  
   if(points.isEmpty()){
     return null;
   }
+  
   
   ArrayList<Point> points1 = new ArrayList<Point>();
   ArrayList<Point> points2 = new ArrayList<Point>();
@@ -170,45 +177,33 @@ KDNode createKDTree(ArrayList<Point> points, int depth){
   
   if(points.size() == 1){
     return new KDNode(points.get(0), depth);
-  }else if((depth % 2) == 0 ){
+  }else if((depth % 2) == 0 ){ //DEPTH! NOT the number of points!
     ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
-    Collections.sort(sortedPoints, new HorizontalComparator());
+    Collections.sort(sortedPoints, new HorizontalComparator()); // FROM LEFT TO RIGHT
 
-    /*
-    for(Point point : sortedPoints){
-      println(point);
-    }
-    */
-    
-    for(int i = 0; i < (sortedPoints.size() / 2);i++){ //(4/2 + 1)
+    for(int i = 0; i < (sortedPoints.size() / 2);i++){ // LEFT
       points1.add(sortedPoints.get(i));
     }
     
-    for(int i = (points.size() / 2 + 1); i < sortedPoints.size();i++){
+    for(int i = (points.size() / 2); i < sortedPoints.size();i++){ // RIGHT
       points2.add(sortedPoints.get(i));
     }
     
-    pointl = sortedPoints.get(sortedPoints.size() /2);
+    //pointl = sortedPoints.get(sortedPoints.size() /2);
+    pointl = sortedPoints.get(sortedPoints.size() / 2 - 1); // THE POINT ON L BELONGS TO LEFT
   }else{
     ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
-    Collections.sort(sortedPoints, new VerticalComparator());
-    Collections.reverse(sortedPoints);
-    
-    println("-------------");
-    for(Point point : sortedPoints){
-      println(point);
-    }
-    
-    for(int i = 0; i < (sortedPoints.size() / 2);i++){ //(3/2)
+    Collections.sort(sortedPoints, new VerticalComparator()); // FROM THE TOP TO THE BOTTOM
+
+    for(int i = 0; i < (sortedPoints.size() / 2);i++){ // ABOVE
       points1.add(sortedPoints.get(i));
     }
     
-    for(int i = (sortedPoints.size() / 2) + 1; i < sortedPoints.size();i++){
+    for(int i = (sortedPoints.size() / 2); i < sortedPoints.size();i++){ // BELOW
       points2.add(sortedPoints.get(i));
     }
     
-    pointl = sortedPoints.get(sortedPoints.size()/2);
-    //println("median: " + pointl);
+    pointl = sortedPoints.get(sortedPoints.size()/2); // POINT ON L BELONGS BELOW
   }
   
   KDNode v = new KDNode(pointl, depth);

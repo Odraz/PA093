@@ -1,12 +1,18 @@
 class Point{
-  float WIDTH = 15;
+  float WIDTH = 10;
   float x, y;
   color clr;
   
   Point(float x, float y){
    this.x = x;
    this.y = y; 
-   this.clr = color(255);
+   this.clr = color(255,255,0);
+  }
+  
+  Point(float x, float y, color clr){
+   this.x = x;
+   this.y = y; 
+   this.clr = clr;
   }
   
   void setPoint(float x, float y){
@@ -55,5 +61,18 @@ class Point{
     double v2 = p3.y - y;
     
     return u1 * v2 - v1 * u2;
+  }
+  
+  @Override
+  public boolean equals(Object obj){
+    if (obj == null) {
+        return false;
+    }
+    if (!Point.class.isAssignableFrom(obj.getClass())) {
+        return false;
+    }
+    final Point other = (Point) obj;
+    
+    return x == other.x && y == other.y;
   }
 }

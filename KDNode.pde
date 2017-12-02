@@ -23,7 +23,11 @@ class KDNode{
    color red = color(255, 0, 0);
    color green = color(0, 255, 0);
    
-   if(depth % 2 == 0){ //even (vertical) //<>//
+   if(lesser == null && greater == null){
+     return;
+   }
+   
+   if(depth % 2 == 0){ //even (vertical)    //<>//
        edgesToDisplay.add(new Edge(point.x, sector.y1, point.x, sector.y2, red));
        
        if(lesser != null){

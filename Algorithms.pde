@@ -75,8 +75,13 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   ArrayList<Point> rightPath = new ArrayList<Point>();
   
   Point previousPoint = hull.get(0);
+  leftPath.add(previousPoint);
   
   for(Point point : hull){
+    if(previousPoint == point){
+      continue;
+    }
+    
     if(point.y > previousPoint.y)
     {
       leftPath.add(point);
@@ -98,16 +103,17 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   
   ArrayList<Edge> edges = new ArrayList<Edge>();
   //for i = 3 to n:
-  for(int i = 2; i < sortedHull.size(); i++){      
+  for(int i = 2; i < sortedHull.size(); i++){          
     Point pointi = sortedHull.get(i);
+    //println("Point " + i + ": " + pointi + ", stack size: " + stack.size());
   //  if vi and the top of the stack lie on the same path (left or right)
   //    add edges vi, vj, …, vi, vk, where vk is the last vertex forming the “correct” line
   //    pop vj, …, vk and push vi
     if(leftPath.contains(stack.peek()) && leftPath.contains(pointi)){
-      while(stack.size() >= 2){
+      while(stack.size() >= 2){        
         Point pointj = stack.pop();
         Point pointk = stack.pop();
-        if(counterClockwise(pointk, pointj, pointi) > 0){
+        if(counterClockwise(pointk, pointj, pointi) < 0){
           edges.add(new Edge(pointi, pointk));
         }else{
           stack.push(pointk);
@@ -119,7 +125,7 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
       while(stack.size() >= 2){
         Point pointj = stack.pop();
         Point pointk = stack.pop();
-        if(counterClockwise(pointk, pointj, pointi) < 0){
+        if(counterClockwise(pointk, pointj, pointi) > 0){
           edges.add(new Edge(pointi, pointk));
         }else{
           stack.push(pointk);
@@ -133,7 +139,7 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   //    push vtop and vi
     }else{
       Point pointTop = stack.peek();
-      while(stack.size() > 0){          
+      while(stack.size() > 0){    
         edges.add(new Edge(pointi, stack.pop()));
       }
       
@@ -158,10 +164,11 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
   return new ArrayList(edges);
 }
 
-KDNode createKDTree(ArrayList<Point> points, int depth){    
+KDNode createKDTree(ArrayList<Point> points, int depth){  //point belongs to left and below  
   if(points.isEmpty()){
     return null;
   }
+  
   
   ArrayList<Point> points1 = new ArrayList<Point>();
   ArrayList<Point> points2 = new ArrayList<Point>();
@@ -170,45 +177,33 @@ KDNode createKDTree(ArrayList<Point> points, int depth){
   
   if(points.size() == 1){
     return new KDNode(points.get(0), depth);
-  }else if((depth % 2) == 0 ){
+  }else if((depth % 2) == 0 ){ //DEPTH! NOT the number of points!
     ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
-    Collections.sort(sortedPoints, new HorizontalComparator());
+    Collections.sort(sortedPoints, new HorizontalComparator()); // FROM LEFT TO RIGHT
 
-    /*
-    for(Point point : sortedPoints){
-      println(point);
-    }
-    */
-    
-    for(int i = 0; i < (sortedPoints.size() / 2);i++){ //(4/2 + 1)
+    for(int i = 0; i < (sortedPoints.size() / 2);i++){ // LEFT
       points1.add(sortedPoints.get(i));
     }
     
-    for(int i = (points.size() / 2 + 1); i < sortedPoints.size();i++){
+    for(int i = (points.size() / 2); i < sortedPoints.size();i++){ // RIGHT
       points2.add(sortedPoints.get(i));
     }
     
-    pointl = sortedPoints.get(sortedPoints.size() /2);
+    //pointl = sortedPoints.get(sortedPoints.size() /2);
+    pointl = sortedPoints.get(sortedPoints.size() / 2 - 1); // THE POINT ON L BELONGS TO LEFT
   }else{
     ArrayList<Point> sortedPoints = new ArrayList<Point>(points);
-    Collections.sort(sortedPoints, new VerticalComparator());
-    Collections.reverse(sortedPoints);
-    
-    println("-------------");
-    for(Point point : sortedPoints){
-      println(point);
-    }
-    
-    for(int i = 0; i < (sortedPoints.size() / 2);i++){ //(3/2)
+    Collections.sort(sortedPoints, new VerticalComparator()); // FROM THE TOP TO THE BOTTOM
+
+    for(int i = 0; i < (sortedPoints.size() / 2);i++){ // ABOVE
       points1.add(sortedPoints.get(i));
     }
     
-    for(int i = (sortedPoints.size() / 2) + 1; i < sortedPoints.size();i++){
+    for(int i = (sortedPoints.size() / 2); i < sortedPoints.size();i++){ // BELOW
       points2.add(sortedPoints.get(i));
     }
     
-    pointl = sortedPoints.get(sortedPoints.size()/2);
-    //println("median: " + pointl);
+    pointl = sortedPoints.get(sortedPoints.size()/2); // POINT ON L BELONGS BELOW
   }
   
   KDNode v = new KDNode(pointl, depth);
@@ -235,26 +230,33 @@ ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
     return null;
   }
   
+  boolean isTriangleCW = true;
   ArrayList<Edge> dt = new ArrayList<Edge>();
   Queue<Edge> ael = new LinkedList<Edge>();
 
   Point p1 = getLeftmostPoint(points); //p1 = random point
-  p1.clr = color(255,0,0);
+  //p1.clr = color(255,0,0);
   Point p2 = p1.getClosestPoint(points); //p2 = closest point to p1
-  p2.clr = color(0,255,0);
+  //p2.clr = color(0,255,0);
   
   Edge e = new Edge(p1, p2);
   Point p = e.findDelaunayPoint(points); //p = smallest Delaunay distance from e
-  if(p == null){
+  if(p == null){ // IF SO, THE FIRST TRIANGLE WONT BE STORED CLOCKWISE
+    isTriangleCW = false;
     e = new Edge(p2, p1);
     p = e.findDelaunayPoint(points);
   }
-  p.clr = color(0,0,255);
+  //p.clr = color(0,0,255);
   
   Edge e2 = new Edge(p2, p);
   Edge e3 = new Edge(p, p1);
 
-  Triangle triangle = new Triangle();
+  if(!isTriangleCW){
+    e2 = new Edge(p, p2);
+    e3 = new Edge(p1, p);
+  }
+
+  Triangle triangle = new Triangle(); // THE FIRST TRIANGLE HAS TO BE STORED CLOCKWISE
   ael.add(e);
   ael.add(e2);
   ael.add(e3);
@@ -311,14 +313,42 @@ ArrayList<Edge> voronoi(ArrayList<Triangle> triangles){
     voronoiPoint.clr = color(255, 0, 0);
     voronoiPoints.add(voronoiPoint);
     
-    ArrayList<Triangle> neighbourTriangles = new ArrayList<Triangle>();
-    neighbourTriangles.add(findTriangle(triangles, new Edge(triangle.point1, triangle.point2)));
-    neighbourTriangles.add(findTriangle(triangles, new Edge(triangle.point2, triangle.point3)));
-    neighbourTriangles.add(findTriangle(triangles, new Edge(triangle.point3, triangle.point1)));
+    ArrayList<Triangle> neighbourTriangles = new ArrayList<Triangle>();  
+    /*
+    if(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint) != null){
+      neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint));
+    }else{
+      if(triangle.containsPoint(voronoiPoint)){
+        edges.add(new Edge(voronoiPoint, new Point((triangle.point1.x + triangle.point2.x)/2, (triangle.point1.y + triangle.point2.y)/2), color(255, 0, 0)));
+      } //<>//
+    }
     
+    if(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint) != null){
+      neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint));
+    }else{
+      if(triangle.containsPoint(voronoiPoint)){
+        edges.add(new Edge(voronoiPoint, new Point((triangle.point2.x + triangle.point3.x)/2, (triangle.point2.y + triangle.point3.y)/2), color(255, 0, 0)));
+      }
+    }
+    
+    if(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint) != null){
+      neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint));
+    }else{
+      if(triangle.containsPoint(voronoiPoint)){
+        edges.add(new Edge(voronoiPoint, new Point((triangle.point3.x + triangle.point1.x)/2, (triangle.point3.y + triangle.point1.y)/2), color(255, 0, 0)));
+      }
+    }
+    */
+    
+    neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint));
+    neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint));
+    neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint));
+   
     if(!neighbourTriangles.isEmpty()){
-      for(Triangle neighbourTriangle : neighbourTriangles){        
-        edges.add(new Edge(voronoiPoint, neighbourTriangle.getVoronoiPoint(), color(255, 0, 0))); //<>//
+      for(Triangle neighbourTriangle : neighbourTriangles){   
+        if(neighbourTriangle != null){
+          edges.add(new Edge(voronoiPoint, neighbourTriangle.getVoronoiPoint(), color(255, 0, 0)));
+        }
       }  
     }
   } 
@@ -327,13 +357,16 @@ ArrayList<Edge> voronoi(ArrayList<Triangle> triangles){
   return edges;
 }
 
-Triangle findTriangle(ArrayList<Triangle> triangles, Edge edge){
+Triangle findTriangle(ArrayList<Triangle> triangles, Triangle currentTriangle, Edge edge, Point voronoiPoint){
   for(Triangle triangle : triangles){
+    if(triangle == currentTriangle){
+      continue;
+    }
     if(triangle.containsEdge(edge)){
       return triangle;
     }
   }
-  
-  
-  return null;
+   //<>//
+  return edge.direction(voronoiPoint) > 0 ? new Triangle(edge.point1, edge.point2, voronoiPoint) : null;
+  //return null;
 }

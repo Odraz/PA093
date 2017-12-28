@@ -115,6 +115,7 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
         Point pointk = stack.pop();
         if(counterClockwise(pointk, pointj, pointi) < 0){
           edges.add(new Edge(pointi, pointk));
+          stack.push(pointk);
         }else{
           stack.push(pointk);
           stack.push(pointj);            
@@ -127,6 +128,7 @@ ArrayList<Edge> triangulate(ArrayList<Point> hull){
         Point pointk = stack.pop();
         if(counterClockwise(pointk, pointj, pointi) > 0){
           edges.add(new Edge(pointi, pointk));
+          stack.push(pointk);
         }else{
           stack.push(pointk);
           stack.push(pointj);

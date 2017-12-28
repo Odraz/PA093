@@ -83,7 +83,7 @@ class GrahamScanButton extends Button{
 
 class PolygonButton extends Button{
   PolygonButton(float x){
-    super(x, "Start polygon");
+    super(x, "Start polygon ccw");
   }
   
   void onClick(){
@@ -93,7 +93,7 @@ class PolygonButton extends Button{
       hullToDisplay = new ArrayList<Point>(points);
     }else{
       refresh();
-      text = "Draw polygon";
+      text = "Draw polygon ccw";
       isCreatingPolygon = true;
     }
   }

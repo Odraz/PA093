@@ -251,16 +251,21 @@ ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
   Edge e2 = new Edge(p2, p);
   Edge e3 = new Edge(p, p1);
 
+  Triangle triangle = new Triangle(); // THE FIRST TRIANGLE HAS TO BE STORED CLOCKWISE
   if(!isTriangleCW){
+    //e = new Edge(p1, p2);
     e2 = new Edge(p, p2);
     e3 = new Edge(p1, p);
+    
+    triangle = new Triangle(p, p2, p1);
+  }else{
+    triangle = new Triangle(p, p1, p2);
   }
 
-  Triangle triangle = new Triangle(); // THE FIRST TRIANGLE HAS TO BE STORED CLOCKWISE
   ael.add(e);
   ael.add(e2);
   ael.add(e3);
-  triangle = new Triangle(p, p1, p2);
+  
   trianglesToDisplay.add(triangle);
       
   while (!ael.isEmpty()){
@@ -314,35 +319,49 @@ ArrayList<Edge> voronoi(ArrayList<Triangle> triangles){
     voronoiPoints.add(voronoiPoint);
     
     ArrayList<Triangle> neighbourTriangles = new ArrayList<Triangle>();  
-    /*
+    
+    
     if(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint) != null){
       neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint));
     }else{
-      if(triangle.containsPoint(voronoiPoint)){
-        edges.add(new Edge(voronoiPoint, new Point((triangle.point1.x + triangle.point2.x)/2, (triangle.point1.y + triangle.point2.y)/2), color(255, 0, 0)));
-      } //<>//
+        Point edgeMiddle = new Point((triangle.point1.x + triangle.point2.x)/2, (triangle.point1.y + triangle.point2.y)/2);
+        PVector normVector = (new PVector(voronoiPoint.x - edgeMiddle.x, voronoiPoint.y - edgeMiddle.y)).normalize();
+        if((new Edge(triangle.point1, triangle.point2)).direction(voronoiPoint) > 0){
+          normVector.mult(-1);
+        }
+        normVector.mult(500);
+        edges.add(new Edge(voronoiPoint, new Point(normVector.x + voronoiPoint.x, normVector.y + voronoiPoint.y), color(255, 0, 0))); //<>//
     }
     
     if(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint) != null){
       neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint));
     }else{
-      if(triangle.containsPoint(voronoiPoint)){
-        edges.add(new Edge(voronoiPoint, new Point((triangle.point2.x + triangle.point3.x)/2, (triangle.point2.y + triangle.point3.y)/2), color(255, 0, 0)));
-      }
+        Point edgeMiddle = new Point((triangle.point2.x + triangle.point3.x)/2, (triangle.point2.y + triangle.point3.y)/2);
+        PVector normVector = (new PVector(voronoiPoint.x - edgeMiddle.x, voronoiPoint.y - edgeMiddle.y)).normalize();
+        if((new Edge(triangle.point2, triangle.point3)).direction(voronoiPoint) > 0){
+          normVector.mult(-1);
+        }
+        normVector.mult(500);
+        edges.add(new Edge(voronoiPoint, new Point(normVector.x + voronoiPoint.x, normVector.y + voronoiPoint.y), color(255, 0, 0)));
     }
     
     if(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint) != null){
       neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint));
     }else{
-      if(triangle.containsPoint(voronoiPoint)){
-        edges.add(new Edge(voronoiPoint, new Point((triangle.point3.x + triangle.point1.x)/2, (triangle.point3.y + triangle.point1.y)/2), color(255, 0, 0)));
-      }
+        Point edgeMiddle = new Point((triangle.point3.x + triangle.point1.x)/2, (triangle.point3.y + triangle.point1.y)/2);
+        PVector normVector = (new PVector(voronoiPoint.x - edgeMiddle.x, voronoiPoint.y - edgeMiddle.y)).normalize();
+        if((new Edge(triangle.point3, triangle.point1)).direction(voronoiPoint) > 0){
+          normVector.mult(-1);
+        }
+        normVector.mult(500);
+        edges.add(new Edge(voronoiPoint, new Point(normVector.x + voronoiPoint.x, normVector.y + voronoiPoint.y), color(255, 0, 0)));
     }
-    */
     
+    /*
     neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint));
     neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint));
     neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint));
+   */
    
     if(!neighbourTriangles.isEmpty()){
       for(Triangle neighbourTriangle : neighbourTriangles){   
@@ -367,6 +386,6 @@ Triangle findTriangle(ArrayList<Triangle> triangles, Triangle currentTriangle, E
     }
   }
    //<>//
-  return edge.direction(voronoiPoint) > 0 ? new Triangle(edge.point1, edge.point2, voronoiPoint) : null;
-  //return null;
+  //return edge.direction(voronoiPoint) > 0 ? new Triangle(edge.point1, edge.point2, voronoiPoint) : null;
+  return null;
 }

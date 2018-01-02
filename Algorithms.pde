@@ -285,7 +285,7 @@ ArrayList<Edge> delaunayTriangulation(ArrayList<Point> points){
     dt.add(e);
     ael.remove(e);
   }
-  
+   //<>//
   return dt;
 } //<>//
 
@@ -330,7 +330,7 @@ ArrayList<Edge> voronoi(ArrayList<Triangle> triangles){
         PVector normVector = (new PVector(voronoiPoint.x - edgeMiddle.x, voronoiPoint.y - edgeMiddle.y)).normalize();
         if((new Edge(triangle.point1, triangle.point2)).direction(voronoiPoint) > 0){
           normVector.mult(-1);
-        }
+        } //<>//
         normVector.mult(500);
         edges.add(new Edge(voronoiPoint, new Point(normVector.x + voronoiPoint.x, normVector.y + voronoiPoint.y), color(255, 0, 0))); //<>//
     }
@@ -363,7 +363,6 @@ ArrayList<Edge> voronoi(ArrayList<Triangle> triangles){
     neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point1, triangle.point2), voronoiPoint));
     neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point2, triangle.point3), voronoiPoint));
     neighbourTriangles.add(findTriangle(triangles, triangle, new Edge(triangle.point3, triangle.point1), voronoiPoint));
-    test
    */
    
     if(!neighbourTriangles.isEmpty()){
@@ -387,7 +386,7 @@ Triangle findTriangle(ArrayList<Triangle> triangles, Triangle currentTriangle, E
     if(triangle.containsEdge(edge)){
       return triangle;
     }
-  }
+  } //<>//
    //<>//
   //return edge.direction(voronoiPoint) > 0 ? new Triangle(edge.point1, edge.point2, voronoiPoint) : null;
   return null;
